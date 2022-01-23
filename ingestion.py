@@ -52,14 +52,14 @@ class TradesApi(MercadoBitcoinApi):
 
 
     def _get_endpoint(self, date_from: datetime.datetime = None, date_to:datetime.datetime = None) -> str:
-
         if date_from and not date_to:
 
             unix_date_from = self._get_unix_epoch(date_from)            
             endpoint = f"{self.baseEndpoint}/{self.coin}/{self.type}/{unix_date_from}"
 
         elif date_from and date_to: 
-
+            if date_from > date_to:
+                raise RuntimeError('Date from cannot be > than date-to')
             unix_date_to = self._get_unix_epoch(date_to)            
             unix_date_from = self._get_unix_epoch(date_from)            
             endpoint = f"{self.baseEndpoint}/{self.coin}/{self.type}/{unix_date_from}/{unix_date_to}"            
@@ -167,14 +167,14 @@ class DaySummaryIngestor(DataIngestor):
 #writer = DataWriter('day_summary_new.json')
 ingestor = DaySummaryIngestor(writer = DataWriter, coins = ['BTC', 'ETH', 'LTC'], default_start_date=datetime.date(2021,6,1))
 
-@repeat(every(1).seconds)
-def job(): 
-    ingestor.ingest()
+#@repeat(every(1).seconds)
+#def job(): 
+    #ingestor.ingest()
 
 
-while True:
-    run_pending()
-    time.sleep(0.5)
+#while True:
+    #run_pending()
+    #time.sleep(0.5)
 
 #data = DaySummaryAPI("BTC").get_data(date=datetime.date(2021,6,22))
 #writer = DataWriter('day_summary.json')
